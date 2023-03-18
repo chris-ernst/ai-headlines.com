@@ -55,16 +55,15 @@ Add following code to base.html:
     <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='output.css') }}">
         <title>FlaskApp</title>
     </head>
     <body>
-        <nav>
-            <a href="#">FlaskApp</a>
-            <a href="#">About</a>
-        </nav>
+        <nav></nav>
         <hr>
         <div class="content">
-            {% block content %} {% endblock %}
+            {% block content %} {% endblock %} 
         </div>
     </body>
     </html>
