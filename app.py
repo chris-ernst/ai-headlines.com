@@ -30,7 +30,7 @@ def runApp(debug, timeIntervals):
 
 
     else:
-        threading.Timer(timeIntervals, runApp).start() 
+        #threading.Timer(timeIntervals, runApp).start() 
 
         ### Prompt Generation
         textPrompt = prompt_gen.promptGen()
@@ -56,7 +56,7 @@ def runApp(debug, timeIntervals):
 
 # debug = True # Change this to true for testing, but make sure to run the flask in --no-debug mode
 # timeIntervals = 300 # Run intervals in seconds
-runApp(True, 300)
+runApp(False, 300)
 
 ##### Routing
 
