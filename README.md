@@ -138,6 +138,100 @@ Change the Build and Run commands of the app. Replace the existing command with 
 
     gunicorn --worker-tmp-dir /dev/shm app:app
 
-### Add Database to app
+### Create .env file
 
-Coming soon. 
+    touch .env
+
+Add the following to .gitignore: 
+
+    .env
+
+Add sensitive information in this format:
+
+    DB_PASSWORD=YourPasswordHere
+
+Then call the environment variables like so:
+
+    import os
+    from dotenv import load_dotenv
+
+    password=os.getenv('DB_PASSWORD'),
+
+### Add PostgreSQL Database to app
+
+Install Psycopg2
+
+    pip install psycopg2-binary
+
+Add the following code to app.py: 
+
+    import psycopg2
+
+    def get_db_connection():
+        conn = psycopg2.connect(
+            dbname=os.getenv('DB_DBNAME'),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD'),
+            host=os.getenv('DB_HOST'),
+            port=os.getenv('DB_PORT'),
+        )
+        return conn
+
+### Add table 
+
+Use 'Beekeper Studio' to set up the table with the help of a UI or via Python like this example:
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute('DROP TABLE IF EXISTS books;')
+    cur.execute('CREATE TABLE books (id serial PRIMARY KEY,'
+                                 'title varchar (150) NOT NULL,'
+                                 'author varchar (50) NOT NULL,'
+                                 'pages_num integer NOT NULL,'
+                                 'review text,'
+                                 'date_added date DEFAULT CURRENT_TIMESTAMP);'
+                                 )
+
+### Add Data to table
+
+Insert data into the table
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute('INSERT INTO ai_headlines_table (headline, paragraph, image_url)'
+                    'VALUES (%s, %s, %s)',
+                    (textAnswer[0],
+                    textAnswer[1],
+                    imgLink)
+                    )
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+### Read Data from table
+
+    @app.route('/')
+    def index():
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC;")
+        news = cur.fetchall()
+        cur.close()
+        conn.close()
+        return render_template('index.html', news=news)
+
+### Display Data in HTML
+
+Database Query returns a list. Loop through the list and grab the data points one by one. 
+
+    {% for item in news %}
+
+        <img src="{{ item[4] | default('No image available') }}">
+        <p class="text-lg pb-6 md:pb-0">{{ item[3] | default('No text available') }}</p>
+
+    {% endfor %}
+
+### That's it!
