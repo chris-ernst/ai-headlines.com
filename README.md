@@ -109,6 +109,9 @@ Change the port if 5000 is already occupied:
 
     export FLASK_RUN_PORT=8000
 
+Or:
+    flask run --debug -p 8000
+
 ### When finished, deploy via Gunicorn
 
 Minify CSS:
