@@ -64,7 +64,8 @@ def sdCall(promptSlug):
 def uploadCare(imgAnswer):
 
     uploadcare = Uploadcare(public_key, secret_key)
-    imgLink = uploadcare.upload(imgAnswer)
+    uploadcareFile = uploadcare.upload(imgAnswer)
+    imgLink=str(uploadcareFile)+"out0.png"
 
     return(imgLink)
 
