@@ -9,7 +9,7 @@ import prompt_gen #includes promptGen function
 import psycopg2
 import os
 from dotenv import load_dotenv
-
+ 
 app = Flask(__name__)
 
 textPrompt = "Empty String"
