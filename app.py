@@ -1,14 +1,12 @@
 from flask import Flask, render_template
-import threading #important for timer
 from apscheduler.schedulers.background import BackgroundScheduler
+import psycopg2
+import os
+from dotenv import load_dotenv
 
 import text_gen #includes gptCall function
 import img_gen #includes sdCall and uploadCare function
 import prompt_gen #includes promptGen function
-
-import psycopg2
-import os
-from dotenv import load_dotenv
  
 app = Flask(__name__)
 
@@ -28,7 +26,7 @@ def get_db_connection():
     )
     return conn
 
-debug = True # Change this to true for testing, but make sure to run the flask in --no-debug mode
+debug = False # Change this to true for testing, but make sure to run the flask in --no-debug mode
 
 def runApp():
     global textPrompt
@@ -41,9 +39,11 @@ def runApp():
         print("********debug mode active, platform will not generate new content********")
 
     else:
+        print("Generating new output")
 
         ### Prompt Generation
         textPrompt = prompt_gen.promptGen()
+        print(textPrompt)
 
         ### Text Generation
         textAnswer = text_gen.gptCall(textPrompt)
@@ -72,16 +72,17 @@ def runApp():
         cur.close()
         conn.close()
 
+        print("Generation finished, data inserted to database")
+
 
 
 
 ##### Running
-
-# scheduler = BackgroundScheduler()
-# scheduler.add_job(runApp, 'interval', hours=7)
-# scheduler.start()
-
-runApp()
+job_defaults = {'coalesce': False,'max_instances': 3}
+scheduler = BackgroundScheduler()
+scheduler.add_job(runApp, 'interval', hours=7)
+#scheduler.add_job(runApp, 'interval', minutes=1)
+scheduler.start()
 
 
 
