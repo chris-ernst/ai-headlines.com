@@ -85,7 +85,7 @@ def runApp():
 # scheduler.add_job(runApp, 'interval', hours=7)
 # scheduler.start()
 
-runApp()
+# runApp()
 
 
 
@@ -93,13 +93,14 @@ runApp()
 
 @app.route('/')
 def index():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC;")
-    news = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('index.html', news=news)
+    # conn = get_db_connection()
+    # cur = conn.cursor()
+    # cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC;")
+    # news = cur.fetchall()
+    # cur.close()
+    # conn.close()
+    # return render_template('index.html', news=news)
+    return render_template('about.html')
 
 @app.route('/about')
 def about():
