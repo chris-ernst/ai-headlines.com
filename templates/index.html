@@ -16,7 +16,7 @@
                 <a class="inline-block text-xs text-slate-300 hover:text-red-500" href="{{ url_for('index') }}">Flag this output</a>
             </div>
             
-            <p class="text-slate-700 md:text-4xl text-3xl font-bold mb-8">{{ item[2] | default('No text available') }}</p>
+            <p class="text-slate-700 font-bold lg:text-5xl md:text-4xl text-3xl lg:mb-8 md:mb-6 mb-4">{{ item[2] | default('No text available') }}</p>
             <p class="text-lg pb-6 md:pb-0">{{ item[3] | default('No text available') }}</p>
         </div>
         <hr>
