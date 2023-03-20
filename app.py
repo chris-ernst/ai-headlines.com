@@ -38,11 +38,7 @@ def runApp():
     global imgLink
 
     if debug == True:
-        print("********debug mode active********")
-        # Dummy Data
-        textAnswer = ['Kongolese President Appoints Robot as Prime Minister in Unprecedented Move', "In a surprising turn of events, the President of the Republic of Kongolo has assigned a highly sophisticated robot as the country's new Prime Minister. The move, which has never been seen before in the history of Kongolese politics, is part of the President's plan to modernize the government and increase efficiency. The robot, equipped with state-of-the-art artificial intelligence and advanced decision-making algorithms, is expected to play a key role in shaping the future of the nation. The decision has sparked a heated debate among citizens, with some praising the innovation while others expressing concerns about the ethical implications of appointing a non-human leader."]
-        imgLink = "https://ucarecdn.com/6002e4af-da7b-452f-916a-1af113762651/"
-
+        print("********debug mode active, platform will not generate new content********")
 
     else:
 
@@ -85,7 +81,7 @@ def runApp():
 # scheduler.add_job(runApp, 'interval', hours=7)
 # scheduler.start()
 
-# runApp()
+runApp()
 
 
 
@@ -93,14 +89,13 @@ def runApp():
 
 @app.route('/')
 def index():
-    # conn = get_db_connection()
-    # cur = conn.cursor()
-    # cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC;")
-    # news = cur.fetchall()
-    # cur.close()
-    # conn.close()
-    # return render_template('index.html', news=news)
-    return render_template('about.html')
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC;")
+    news = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('index.html', news=news)
 
 @app.route('/about')
 def about():
