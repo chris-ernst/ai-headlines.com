@@ -10,7 +10,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # Function gptCall takes a text promt as a String and returns headline and body paragraph as a list. 
 
 def gptCall(textPrompt):
-    completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": textPrompt}])
+    completion = openai.ChatCompletion.create(model="gpt-4", messages=[{"role": "user", "content": textPrompt}])
     
     gptAnswer = completion.choices[0].message.content
     gptAnswer = (gptAnswer.splitlines())
