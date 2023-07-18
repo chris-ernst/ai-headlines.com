@@ -70,7 +70,7 @@ Add following code to base.html:
 
 ### Add Tailwind CSS to project
 
-    pip install tailwindcss
+    pip install pytailwindcss
     mkdir static
     cd static
     tailwindcss init
