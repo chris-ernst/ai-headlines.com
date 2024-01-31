@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="xl:container xl:mx-auto md:p-20 sm:p-10 p-4">
+
+
+    {% for item in news %}
+
+    <div class="flex md:flex-row md:mb-20 flex-col mb-10">
+
+        <div class="">
+            <img src="{{ item[4] | default('No image available') }}" class="h-96 md:ml-0 mb-4 object-cover">
+        </div>
+        
+        <div class="flex-1 flex flex-col justify-center md:ml-12 ml-0">
+            <div class="mb-4">
+                <p class="inline-block text-xs mr-2">
+                    {{ item[1] | default('No timestamp available') }} | {{ item[5] | default('No image model info available') }} | {{ item[6] | default('No text model info available') }}
+                </p>
+                <a class="inline-block text-xs text-slate-300 hover:text-red-500" href="{{ url_for('index') }}">Flag this output</a>
+            </div>
+            
+            <p class="text-slate-700 font-bold xl:text-5xl md:text-4xl text-3xl xl:mb-8 md:mb-6 mb-4">{{ item[2] | default('No text available') }}</p>
+            <p class="text-lg pb-6 md:pb-0">{{ item[3] | default('No text available') }}</p>
+        </div>
+        <hr>
+        
+    </div>
+
+    {% endfor %}
+
+    </div>
+
+{% endblock %}

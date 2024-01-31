@@ -97,13 +97,17 @@ else:
 
 @app.route('/')
 def index():
+    return render_template('index.html')
+
+@app.route('/news')
+def news():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC;")
     news = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('index.html', news=news)
+    return render_template('news.html', news=news)
 
 @app.route('/about')
 def about():
