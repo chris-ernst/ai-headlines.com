@@ -43,7 +43,7 @@
 
     <!-- Forward -->
     <a href="{{ url_for('news', page=page+1 if page < total_pages else total_pages) }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-full border border-gray-300 hover:bg-gray-100 {{ 'cursor-not-allowed opacity-50' if page >= total_pages else '' }}">
-        &lt; Back
+        &lt; Older
     </a>
 
     <!-- Current Page Indicator -->
@@ -53,7 +53,7 @@
 
     <!-- Back -->
     <a href="{{ url_for('news', page=page-1 if page > 1 else 1) }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-full border border-gray-300 hover:bg-gray-100 {{ 'cursor-not-allowed opacity-50' if page <= 1 else '' }}">
-        Forward &gt;
+        Newer &gt;
     </a>
 
 
