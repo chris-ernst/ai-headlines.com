@@ -1,5 +1,4 @@
 from flask import Flask, render_template
-from apscheduler.schedulers.background import BackgroundScheduler
 import psycopg2
 import os
 from dotenv import load_dotenv
@@ -26,7 +25,6 @@ def get_db_connection():
     )
     return conn
 
-debug = False # Change this to true for testing, but make sure to run the flask in --no-debug mode
 
 def runApp():
     global textPrompt
@@ -35,54 +33,63 @@ def runApp():
     global imgAnswer
     global imgLink
 
-    if debug == True:
-        print("********debug mode active, platform will not generate new content********")
+    print("Generating new output")
 
-    else:
-        print("Generating new output")
+    ### Prompt Generation
+    textPrompt = prompt_gen.promptGen()
+    print(textPrompt)
 
-        ### Prompt Generation
-        textPrompt = prompt_gen.promptGen()
-        print(textPrompt)
+    ### Text Generation
+    textAnswer = text_gen.gptCall(textPrompt)
+    print(textAnswer)
 
-        ### Text Generation
-        textAnswer = text_gen.gptCall(textPrompt)
-        print(textAnswer)
+    ### Image Generation
+    imgPrompt = textAnswer["headline"] # Extract Image Prompt from headline
+    imgAnswer = img_gen.sdCall(imgPrompt) # Generate Image via Replicate API
+    print(imgAnswer)
+    imgLink = img_gen.uploadCare(imgAnswer) # Upload the resulting image to uploadcare CDN
+    print(imgLink)
 
-        ### Image Generation
-        imgPrompt = textAnswer[0] # Extract Image Prompt from headline
-        imgAnswer = img_gen.sdCall(imgPrompt) # Generate Image via Replicate API 
-        print(imgAnswer)
-        imgLink = img_gen.uploadCare(imgAnswer) # Upload the resulting image to uploadcare CDN
-        print(imgLink)
+    ### Model information
+    image_model = "sdxl"
+    text_model = "gpt-4-turbo"
 
-        ### Database reading and Writing
-        conn = get_db_connection()
-        cur = conn.cursor()
+    ### Database reading and Writing
+    conn = get_db_connection()
+    cur = conn.cursor()
 
-        # Insert data into the table
-        cur.execute('INSERT INTO ai_headlines_table (headline, paragraph, image_url)'
-                    'VALUES (%s, %s, %s)',
-                    (textAnswer[0],
-                    textAnswer[1],
-                    imgLink)
-                    )
+    # Insert data into the table
+    cur.execute('INSERT INTO ai_headlines_table (headline, paragraph, image_url, image_model, text_model)'
+                'VALUES (%s, %s, %s, %s, %s)',
+                (textAnswer["headline"],
+                textAnswer["paragraph"],
+                str(imgLink),
+                image_model,
+                text_model)
+                )
 
-        conn.commit()
-        cur.close()
-        conn.close()
+    conn.commit()
+    cur.close()
+    conn.close()
 
-        print("Generation finished, data inserted to database")
-
+    print("Generation finished, data inserted to database")
 
 
+##### Debugging
+debug = False # Change this to true for testing, but make sure to run the flask in --no-debug mode
 
-##### Running
-job_defaults = {'coalesce': False,'max_instances': 3}
-scheduler = BackgroundScheduler()
-scheduler.add_job(runApp, 'interval', hours=7)
-#scheduler.add_job(runApp, 'interval', minutes=1)
-scheduler.start()
+if debug == True:
+    print("********debug mode active, run Python3 app.py in terminal to test********")
+    runApp()
+else:
+    print("********debug mode inactive********")
+    from apscheduler.schedulers.background import BackgroundScheduler
+    scheduler = BackgroundScheduler()
+    #### Running
+    job_defaults = {'coalesce': False,'max_instances': 3}
+    scheduler.add_job(runApp, 'interval', hours=7)
+    # scheduler.add_job(runApp, 'interval', minutes=3)
+    scheduler.start()
 
 
 
