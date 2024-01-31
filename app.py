@@ -99,15 +99,46 @@ else:
 def index():
     return render_template('index.html')
 
+# @app.route('/news')
+# def news():
+#     conn = get_db_connection()
+#     cur = conn.cursor()
+#     cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC;")
+#     news = cur.fetchall()
+#     cur.close()
+#     conn.close()
+#     return render_template('news.html', news=news)
+
+from flask import request
+
 @app.route('/news')
 def news():
+    items_per_page = 10
+    page = request.args.get('page', 1, type=int)
+
+    # Ensure page is not below 1
+    page = max(page, 1)
+
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC;")
+
+    # Get total news count to calculate total pages
+    cur.execute("SELECT COUNT(*) FROM ai_headlines_table;")
+    total_news_count = cur.fetchone()[0]
+    total_pages = (total_news_count + items_per_page - 1) // items_per_page
+
+    # Ensure page does not exceed total pages
+    page = min(page, total_pages)
+
+    offset = (page - 1) * items_per_page
+    cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC LIMIT %s OFFSET %s;", (items_per_page, offset))
     news = cur.fetchall()
+
     cur.close()
     conn.close()
-    return render_template('news.html', news=news)
+
+    return render_template('news.html', news=news, page=page, total_pages=total_pages)
+
 
 @app.route('/about')
 def about():
