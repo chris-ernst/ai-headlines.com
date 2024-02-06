@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 import psycopg2
 import os
 from dotenv import load_dotenv
@@ -25,6 +25,9 @@ def get_db_connection():
     )
     return conn
 
+### Database reading and Writing
+conn = get_db_connection()
+cur = conn.cursor()
 
 def runApp():
     global textPrompt
@@ -53,10 +56,6 @@ def runApp():
     ### Model information
     image_model = "sdxl"
     text_model = "gpt-4-turbo"
-
-    ### Database reading and Writing
-    conn = get_db_connection()
-    cur = conn.cursor()
 
     # Insert data into the table
     cur.execute('INSERT INTO ai_headlines_table (headline, paragraph, image_url, image_model, text_model)'
@@ -99,17 +98,6 @@ else:
 def index():
     return render_template('index.html')
 
-# @app.route('/news')
-# def news():
-#     conn = get_db_connection()
-#     cur = conn.cursor()
-#     cur.execute("SELECT * FROM ai_headlines_table ORDER BY id DESC;")
-#     news = cur.fetchall()
-#     cur.close()
-#     conn.close()
-#     return render_template('news.html', news=news)
-
-from flask import request
 
 @app.route('/news')
 def news():
@@ -143,3 +131,25 @@ def news():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+
+# Flagging content
+@app.route('/flag-content', methods=['POST'])
+def flag_content():
+    content_id = request.json.get('contentId')
+    user_response = request.json.get('captchaResponse')  # Captcha response from the frontend
+
+    # Insert data into the table
+    cur.execute('INSERT INTO ai_headlines_flagged_content (content_id)'
+                'VALUES (%s)',
+                (content_id,)
+                )
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    print(f"Content ID {content_id} has been flagged")
+
+    return jsonify({"message": "Content flagged successfully"}), 200

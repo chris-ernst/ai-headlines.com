@@ -2,6 +2,27 @@
 
 {% block content %}
 
+    <script>
+        function flagContent(contentId) {
+            fetch('/flag-content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ contentId: contentId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Content flagged successfully.");
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+
+
     <div class="xl:container xl:mx-auto md:p-20 sm:p-10 p-4">
 
 
@@ -18,7 +39,8 @@
                 <p class="inline-block text-xs mr-2">
                     {{ item[1] | default('No timestamp available') }} | <a href=https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0" target="_blank">{{ item[5] | default('No image model info available') }}</a> | <a href="https://openai.com/blog/new-embedding-models-and-api-updates" target="_blank">{{ item[6] | default('No text model info available') }}</a>
                 </p>
-                <a class="inline-block text-xs text-slate-300 hover:text-red-500" href="{{ url_for('index') }}">Flag this output</a>
+                <button onclick="flagContent({{ item[0] }})" class="inline-block text-xs text-slate-300 hover:text-red-500">Flag This Output</button>
+
             </div>
             
             <p class="text-slate-700 font-bold xl:text-5xl md:text-4xl text-3xl xl:mb-8 md:mb-6 mb-4">{{ item[2] | default('No text available') }}</p>
