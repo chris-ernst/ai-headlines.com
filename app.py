@@ -25,10 +25,6 @@ def get_db_connection():
     )
     return conn
 
-### Database reading and Writing
-conn = get_db_connection()
-cur = conn.cursor()
-
 def runApp():
     global textPrompt
     global textAnswer
@@ -56,6 +52,10 @@ def runApp():
     ### Model information
     image_model = "sdxl"
     text_model = "gpt-4-turbo"
+
+    ### Database reading and Writing
+    conn = get_db_connection()
+    cur = conn.cursor()
 
     # Insert data into the table
     cur.execute('INSERT INTO ai_headlines_table (headline, paragraph, image_url, image_model, text_model)'
@@ -139,6 +139,9 @@ def about():
 def flag_content():
     content_id = request.json.get('contentId')
     user_response = request.json.get('captchaResponse')  # Captcha response from the frontend
+
+    conn = get_db_connection()
+    cur = conn.cursor()
 
     # Insert data into the table
     cur.execute('INSERT INTO ai_headlines_flagged_content (content_id)'
