@@ -48,6 +48,7 @@ def uploadCare(imgAnswer):
         check_duplicates=True,
         save_duplicates=False
     )
+    imgLink = f"{imgLink}-/preview/1000x1000/"
     return(imgLink)
 
 
